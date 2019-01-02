@@ -1,3 +1,10 @@
+#include <sys/mman.h>
+#include <sys/stat.h>
+void* mapped_memory = 0;
+long int mapped_memory_size = 0;
+long int curpos = 0;
+
+
 
 #line 3 "lex.yy.c"
 
@@ -1492,6 +1499,7 @@ unsigned long hash(char *s);
  * The user has a chance to override it with an option.
  */
 #include <unistd.h>
+#include <fcntl.h>
 
 #endif
 
@@ -1588,7 +1596,7 @@ static int input(void);
 /* Gets input and stuffs it into "buf".  number of characters read, or YY_NULL,
  * is returned in "result".
  */
-#ifndef YY_INPUT
+#ifndef YY_INPUT/*
 #define YY_INPUT(buf, result, max_size) \
     errno=0; \
     while ( (result = (int) read( fileno(yyin), buf, (yy_size_t) max_size )) < 0 ) \
@@ -1601,6 +1609,16 @@ static int input(void);
         errno=0; \
         clearerr(yyin); \
     }\
+\*/
+
+
+#define YY_INPUT(buf, result, max_size) \
+    if(curpos+max_size > mapped_memory_size) { \
+        max_size = mapped_memory_size-curpos; \
+    } \
+    memcpy(buf, mapped_memory+curpos, max_size); \
+    curpos += max_size; \
+    result = max_size; \
 \
 
 #endif
@@ -2263,11 +2281,13 @@ static void yy_load_buffer_state(void) {
 YY_BUFFER_STATE yy_create_buffer(FILE *file, int size) {
     YY_BUFFER_STATE b;
 
+
     b = (YY_BUFFER_STATE) yyalloc(sizeof(struct yy_buffer_state));
     if (!b)
         YY_FATAL_ERROR("out of dynamic memory in yy_create_buffer()");
 
     b->yy_buf_size = size;
+
 
     /* yy_ch_buf has to be 2 characters longer than the size given because
 	 * we need to put in 2 end-of-buffer characters.
@@ -2275,6 +2295,8 @@ YY_BUFFER_STATE yy_create_buffer(FILE *file, int size) {
     b->yy_ch_buf = (char *) yyalloc((yy_size_t) (b->yy_buf_size + 2));
     if (!b->yy_ch_buf)
         YY_FATAL_ERROR("out of dynamic memory in yy_create_buffer()");
+
+
 
     b->yy_is_our_buffer = 1;
 
@@ -2774,6 +2796,24 @@ int main(int argc, char *argv[]) {
     if (yyin == NULL) {
         perror(argv[1]);
         exit(1);
+    }
+
+
+    int fd = open(argv[1], O_RDWR);
+
+
+    struct stat attr;
+
+    if(fstat(fd, &attr) < 0) {
+        fprintf(stderr,"Error fstat\n");
+        close(fd);
+        exit(1);
+    }
+
+    mapped_memory_size = attr.st_size;
+    mapped_memory = mmap(0, attr.st_size, PROT_READ, MAP_SHARED, fd, 0);
+    if(mapped_memory == MAP_FAILED) {
+        printf("MAPP FAILED");
     }
 
     initialize_yy();
