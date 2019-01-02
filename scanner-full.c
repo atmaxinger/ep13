@@ -1665,7 +1665,7 @@ YY_DECL {
 
 #line 1672 "lex.yy.c"
 
-        while ( /*CONSTCOND*/1)        /* loops until end-of-file is reached */
+        do        /* loops until end-of-file is reached */
         {
             yy_cp = (yy_c_buf_p);
 
@@ -1924,7 +1924,7 @@ YY_DECL {
                     YY_FATAL_ERROR(
                             "fatal flex scanner internal error--no action found");
             } /* end of action switch */
-        } /* end of scanning one token */
+        } while(1); /* end of scanning one token */
     } /* end of user's declarations */
 } /* end of yylex */
 
