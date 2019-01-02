@@ -1,5 +1,5 @@
 all: scanner1
-	perf stat -e cycles -e instructions -e L1-dcache-load-misses -e LLC-load-misses -e branch-misses ./scanner1 /nfs/unsafe/httpd/ftp/pub/anton/lvas/effizienz-aufgabe13/llinput
+	perf stat -r 5 -e cycles -e instructions -e L1-dcache-load-misses -e LLC-load-misses -e branch-misses ./scanner1 /nfs/unsafe/httpd/ftp/pub/anton/lvas/effizienz-aufgabe13/llinput
 
 scanner1: scanner-full.c
 	gcc -O scanner-full.c -o scanner1
