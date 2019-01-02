@@ -1710,30 +1710,61 @@ YY_DECL {
             do_action:    /* This label is used only to access EOF actions. */
 
             switch (yy_act) { /* beginning of action switch */
-                case 1:
+                case 14:
                     YY_RULE_SETUP
-#line 26 "scanner.l"
-                    return END;
+#line 39 "scanner.l"
+                    return yytext[0];
                     YY_BREAK
-                case 2:
+                case 19:
+/* rule 19 can match eol */
                     YY_RULE_SETUP
-#line 27 "scanner.l"
-                    return ARRAY;
+#line 44 "scanner.l"
+                    ;
                     YY_BREAK
-                case 3:
+                case 16:
                     YY_RULE_SETUP
-#line 28 "scanner.l"
-                    return OF;
+#line 41 "scanner.l"
+                    return hash(yytext);
                     YY_BREAK
                 case 4:
                     YY_RULE_SETUP
 #line 29 "scanner.l"
                     return INT;
                     YY_BREAK
+                case 1:
+                    YY_RULE_SETUP
+#line 26 "scanner.l"
+                    return END;
+                    YY_BREAK
+                case 17:
+                    YY_RULE_SETUP
+#line 42 "scanner.l"
+                    return strtoul(yytext, NULL, 10) ^ 0x8000;
+                    YY_BREAK
                 case 5:
                     YY_RULE_SETUP
 #line 30 "scanner.l"
                     return RETURN;
+                    YY_BREAK
+                case 15:
+                    YY_RULE_SETUP
+#line 40 "scanner.l"
+                    return ASSIGNOP;
+                    YY_BREAK
+                case 3:
+                    YY_RULE_SETUP
+#line 28 "scanner.l"
+                    return OF;
+                    YY_BREAK
+                case 2:
+                    YY_RULE_SETUP
+#line 27 "scanner.l"
+                    return ARRAY;
+                    YY_BREAK
+                case 11:
+                    YY_RULE_SETUP
+#line 36 "scanner.l"
+                    return VAR;
                     YY_BREAK
                 case 6:
                     YY_RULE_SETUP
@@ -1745,6 +1776,13 @@ YY_DECL {
 #line 32 "scanner.l"
                     return THEN;
                     YY_BREAK
+                case 20:
+                    YY_RULE_SETUP
+#line 45 "scanner.l"
+                    ;
+                    YY_BREAK
+
+
                 case 8:
                     YY_RULE_SETUP
 #line 33 "scanner.l"
@@ -1760,75 +1798,21 @@ YY_DECL {
 #line 35 "scanner.l"
                     return DO;
                     YY_BREAK
-                case 11:
+                case 13:
                     YY_RULE_SETUP
-#line 36 "scanner.l"
-                    return VAR;
+#line 38 "scanner.l"
+                    return OR;
                     YY_BREAK
                 case 12:
                     YY_RULE_SETUP
 #line 37 "scanner.l"
                     return NOT;
                     YY_BREAK
-                case 13:
-                    YY_RULE_SETUP
-#line 38 "scanner.l"
-                    return OR;
-                    YY_BREAK
-                case 14:
-                    YY_RULE_SETUP
-#line 39 "scanner.l"
-                    return yytext[0];
-                    YY_BREAK
-                case 15:
-                    YY_RULE_SETUP
-#line 40 "scanner.l"
-                    return ASSIGNOP;
-                    YY_BREAK
-                case 16:
-                    YY_RULE_SETUP
-#line 41 "scanner.l"
-                    return hash(yytext);
-                    YY_BREAK
-                case 17:
-                    YY_RULE_SETUP
-#line 42 "scanner.l"
-                    return strtoul(yytext, NULL, 10) ^ 0x8000;
-                    YY_BREAK
                 case 18:
                     YY_RULE_SETUP
 #line 43 "scanner.l"
                     return strtoul(yytext + 1, NULL, 16) ^ 0x4000;
                     YY_BREAK
-                case 19:
-/* rule 19 can match eol */
-                    YY_RULE_SETUP
-#line 44 "scanner.l"
-                    ;
-                    YY_BREAK
-                case 20:
-                    YY_RULE_SETUP
-#line 45 "scanner.l"
-                    ;
-                    YY_BREAK
-                case 21:
-                    YY_RULE_SETUP
-#line 46 "scanner.l"
-                    printf("Lexical error. Unrecognised input \"%s\"\n", yytext);
-                    exit(1);
-                    YY_BREAK
-                case YY_STATE_EOF(INITIAL):
-#line 47 "scanner.l"
-                    eof = 1;
-                    return 0;
-                    YY_BREAK
-                case 22:
-                    YY_RULE_SETUP
-#line 48 "scanner.l"
-                    ECHO;
-                    YY_BREAK
-#line 1817 "lex.yy.c"
-
                 case YY_END_OF_BUFFER: {
                     /* Amount of text matched not including the EOB char. */
                     int yy_amount_of_matched_text = (int) (yy_cp - (yytext_ptr)) - 1;
@@ -1876,7 +1860,9 @@ YY_DECL {
 			 * will run more slowly).
 			 */
 
-                        yy_next_state = yy_try_NUL_trans(yy_current_state);
+                        yy_current_state = yy_NUL_trans[yy_current_state];
+
+                        yy_next_state = (yy_current_state == 0) ? 0 : yy_current_state;
 
                         yy_bp = (yytext_ptr) + YY_MORE_ADJ;
 
@@ -1938,11 +1924,31 @@ YY_DECL {
                     break;
                 }
 
+
+                case 21:
+                    YY_RULE_SETUP
+#line 46 "scanner.l"
+                    printf("Lexical error. Unrecognised input \"%s\"\n", yytext);
+                    exit(1);
+                    YY_BREAK
+                case YY_STATE_EOF(INITIAL):
+#line 47 "scanner.l"
+                    eof = 1;
+                    return 0;
+                    YY_BREAK
+                case 22:
+                    YY_RULE_SETUP
+#line 48 "scanner.l"
+                    ECHO;
+                    YY_BREAK
+#line 1817 "lex.yy.c"
+
+
                 default:
                     YY_FATAL_ERROR(
                             "fatal flex scanner internal error--no action found");
             } /* end of action switch */
-        } while(1); /* end of scanning one token */
+        } while (1); /* end of scanning one token */
     } /* end of user's declarations */
 } /* end of yylex */
 
