@@ -5,3 +5,6 @@ set(CMAKE_C_STANDARD 11)
 
 add_executable(ep13
         scanner.c)
+
+add_executable(ep13full
+        scanner-full.c)
