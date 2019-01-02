@@ -1,12 +1,15 @@
-all: scanner
-	perf stat -e cycles -e instructions -e L1-dcache-load-misses -e LLC-load-misses -e branch-misses scanner /nfs/unsafe/httpd/ftp/pub/anton/lvas/effizienz-aufgabe13/llinput
+all: scanner1
+	perf stat -e cycles -e instructions -e L1-dcache-load-misses -e LLC-load-misses -e branch-misses ./scanner1 /nfs/unsafe/httpd/ftp/pub/anton/lvas/effizienz-aufgabe13/llinput
 
-scanner: scanner.c
-	gcc -O scanner.c -o scanner
+scanner1: scanner-full.c
+	gcc -O scanner-full.c -o scanner1
 
-scanner.c: scanner.l
+# scanner: scanner.c
+# 	gcc -O scanner.c -o scanner
 
-ep13.tar.gz:
-	mkdir ep13
-	ln scanner.l Makefile ep13
-	tar cfz ep13.tar.gz ep13
+# scanner.c: scanner.l
+
+# ep13.tar.gz:
+#	mkdir ep13
+#	ln scanner.l Makefile ep13
+#	tar cfz ep13.tar.gz ep13
