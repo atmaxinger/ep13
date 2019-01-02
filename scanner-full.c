@@ -48,7 +48,7 @@ typedef uint16_t flex_uint16_t;
 typedef int32_t flex_int32_t;
 typedef uint32_t flex_uint32_t;
 #else
-                                                                                                                        typedef signed char flex_int8_t;
+typedef signed char flex_int8_t;
 typedef short int flex_int16_t;
 typedef int flex_int32_t;
 typedef unsigned char flex_uint8_t;
@@ -131,7 +131,7 @@ typedef unsigned int flex_uint32_t;
 /* Size of default input buffer. */
 #ifndef YY_BUF_SIZE
 #ifdef __ia64__
-                                                                                                                        /* On IA-64, the buffer size is 16k, not 8k.
+/* On IA-64, the buffer size is 16k, not 8k.
  * Moreover, YY_BUF_SIZE is 2*YY_READ_BUF_SIZE in the general case.
  * Ditto for the __ia64__ case accordingly.
  */
@@ -1535,7 +1535,7 @@ void yyset_lineno(int _line_number);
  */
 
 #ifndef YY_SKIP_YYWRAP
-                                                                                                                        #ifdef __cplusplus
+ #ifdef __cplusplus
 extern "C" int yywrap ( void );
 #else
 extern int yywrap ( void );
@@ -1570,7 +1570,7 @@ static int input(void);
 /* Amount of stuff to slurp up with each read. */
 #ifndef YY_READ_BUF_SIZE
 #ifdef __ia64__
-                                                                                                                        /* On IA-64, the buffer size is 16k, not 8k */
+/* On IA-64, the buffer size is 16k, not 8k */
 #define YY_READ_BUF_SIZE 16384
 #else
 #define YY_READ_BUF_SIZE 8192
@@ -2663,7 +2663,7 @@ static int yy_init_globals(void) {
 
 /* Defined in main.c */
 #ifdef YY_STDINIT
-                                                                                                                            yyin = stdin;
+    yyin = stdin;
     yyout = stdout;
 #else
     yyin = NULL;
@@ -2702,7 +2702,7 @@ int yylex_destroy(void) {
  */
 
 #ifndef yytext_ptr
-                                                                                                                        static void yy_flex_strncpy (char* s1, const char * s2, int n )
+static void yy_flex_strncpy (char* s1, const char * s2, int n )
 {
 
 	int i;
@@ -2712,7 +2712,7 @@ int yylex_destroy(void) {
 #endif
 
 #ifdef YY_NEED_STRLEN
-                                                                                                                        static int yy_flex_strlen (const char * s )
+static int yy_flex_strlen (const char * s )
 {
 	int n;
 	for ( n = 0; s[n]; ++n )
