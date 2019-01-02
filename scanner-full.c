@@ -1658,30 +1658,7 @@ YY_DECL {
     char *yy_cp, *yy_bp;
     int yy_act;
 
-    if (!(yy_init)) {
-        (yy_init) = 1;
-
-#ifdef YY_USER_INIT
-        YY_USER_INIT;
-#endif
-
-        if (!(yy_start))
-            (yy_start) = 1;    /* first start state */
-
-        if (!yyin)
-            yyin = stdin;
-
-        if (!yyout)
-            yyout = stdout;
-
-        if (!YY_CURRENT_BUFFER) {
-            yyensure_buffer_stack();
-            YY_CURRENT_BUFFER_LVALUE =
-                    yy_create_buffer(yyin, YY_BUF_SIZE);
-        }
-
-        yy_load_buffer_state();
-    }
+    // INITIALISIERUNG WURDE AUSGEKOPPELT NACH initialize_yy()
 
     {
 #line 25 "scanner.l"
@@ -2757,6 +2734,36 @@ unsigned long hash(char *s) {
     return r;
 }
 
+/*
+ * Diese Funktion war Teil von yylex().
+ * Dieser Programmteil wurde nur 1 mal ausgeführt, aber da yylex in einer
+ * Schleife ausgeführt wird, kam es öfters zu branch misses. Dies wird jetzt verhindert.
+ */
+static int initialize_yy() {
+    (yy_init) = 1;
+
+#ifdef YY_USER_INIT
+    YY_USER_INIT;
+#endif
+
+    if (!(yy_start))
+        (yy_start) = 1;    /* first start state */
+
+    if (!yyin)
+        yyin = stdin;
+
+    if (!yyout)
+        yyout = stdout;
+
+    if (!YY_CURRENT_BUFFER) {
+        yyensure_buffer_stack();
+        YY_CURRENT_BUFFER_LVALUE =
+                yy_create_buffer(yyin, YY_BUF_SIZE);
+    }
+
+    yy_load_buffer_state();
+}
+
 int main(int argc, char *argv[]) {
     unsigned long x, r;
     if (argc != 2) {
@@ -2768,6 +2775,9 @@ int main(int argc, char *argv[]) {
         perror(argv[1]);
         exit(1);
     }
+
+    initialize_yy();
+
     for (x = 0; r = yylex(), eof == 0;)
         x = (x + r) * hashmult;
     printf("%lx\n", x);
