@@ -1,7 +1,7 @@
 cust: scanner2
 	perf stat -r 5 -e cycles -e instructions -e L1-dcache-load-misses -e LLC-load-misses -e branch-misses ./scanner2 ../llinput
 
-scanner2:
+scanner2: custpars.c
 	gcc -O3 custpars.c -o scanner2
 
 all: scanner1
