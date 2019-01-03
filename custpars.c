@@ -14,17 +14,21 @@
 #define hashmult 13493690561280548289ULL
 
 char* mapped_memory = NULL;
-char* p_mm = NULL;
+// The size of the mapped memory
 long int mapped_memory_size = 0;
+// The last valid address of the mapped memory
 long int last_address = 0;
+
+// pointer to the next char in mapped memory
+char* p_mm = NULL;
+
+// if we are at the end
+int eof = 0;
+
+
 
 
 enum { END=256, ARRAY, OF, INT, RETURN, IF, THEN, ELSE, WHILE, DO, VAR, NOT, OR, ASSIGNOP };
-int eof = 0;
-
-unsigned long hash(char *s);
-
-
 
 #define NUMBER_OF_KEYWORDS 13
 char * keywords[]  = {
@@ -35,6 +39,9 @@ int keyword_enum [] = {
         END, ARRAY, OF, INT, RETURN, IF, THEN, ELSE, WHILE, DO, VAR, NOT, OR
 };
 
+
+
+unsigned long hash(char *s);
 
 // ---------------------------------------------------
 
