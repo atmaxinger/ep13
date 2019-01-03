@@ -8,3 +8,6 @@ add_executable(ep13
 
 add_executable(ep13full
         scanner-full.c)
+
+add_executable(cust
+        custpars.c)
