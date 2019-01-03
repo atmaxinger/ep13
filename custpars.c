@@ -82,6 +82,21 @@ int read_to_next_whitespace(void) {
     fputc('\n', stdout);
 }
 
+
+/* Reads exactly one token.
+
+   If it is whitespace => ignore
+   If it is a comment => ignore everything until \n
+   If it is a lexchar => return the char
+      If it is the assignment operator (consists of the two lexchars ':' and '=') => return ASSIGNOP
+   If it is a keyword => return the keyword
+   If it is an integer => return the integer XORED with a magic number
+      Note, that a token is also considered an integer, if it starts with a number.
+            e.g. 39if are two tokens, an integer (39) and the keyword 'if'
+   If it is a hex number (starts with $) => return the value XORED with a magic number
+   If it is an ID (has to start with a letter) => return the hash of the ID
+   If it is none of the above, throw an error
+*/
 int lex(void) {
     char *token_start=p_mm;
     int canAccessPmm = 1;
@@ -208,14 +223,26 @@ int lex(void) {
             }
 
             // finally, check for ID
-            char original_character = *p_mm;
-            p_mm[0] = '\0';
+            if((token_start[0] >= 'A' && token_start[0] <= 'Z') || (token_start[0] >= 'a' && token_start[0] <= 'z') ) {
+                char original_character = *p_mm;
+                p_mm[0] = '\0';
 
-            int val = hash(token_start);
+                int val = hash(token_start);
 
-            p_mm[0] = original_character;
+                p_mm[0] = original_character;
 
-            return val;
+                return val;
+            }
+            else {
+                char original_character = *p_mm;
+                p_mm[0] = '\0';
+
+                printf("Lexical error. Unrecognised input \"%s\"\n", token_start);
+
+                p_mm[0] = original_character;
+
+                exit(1);
+            }
         }
     }
 }
