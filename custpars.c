@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <sys/mman.h>
 #include <fcntl.h>
-#include <zconf.h>
+#include <unistd.h>
 #include <stdlib.h>
 #include <memory.h>
 
@@ -24,8 +24,6 @@ char* p_mm = NULL;
 
 // if we are at the end
 int eof = 0;
-
-
 
 
 enum { END=256, ARRAY, OF, INT, RETURN, IF, THEN, ELSE, WHILE, DO, VAR, NOT, OR, ASSIGNOP };
