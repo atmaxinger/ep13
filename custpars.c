@@ -50,11 +50,11 @@ static int can_access_address(char* ptr) {
     return ptr <= last_address;
 }
 
-int is_whitespace(char *value) {
+static int is_whitespace(char *value) {
     return *value == ' ' || *value == '\t' || *value == '\n';
 }
 
-int is_lexchar(char *value) {
+static int is_lexchar(char *value) {
     return *value == ';'
             || *value == '('
             || *value == ')'
@@ -283,10 +283,11 @@ int main(int argc, char *argv[]) {
     }
 
     mapped_memory_size = attr.st_size;
-    mapped_memory = mmap(0, attr.st_size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
+    mapped_memory = mmap(0, attr.st_size, PROT_READ|PROT_WRITE, MAP_PRIVATE, fd, 0);
     if(mapped_memory == MAP_FAILED) {
         printf("MMAP FAILED");
     }
+    madvise(mapped_memory, mapped_memory_size, MADV_SEQUENTIAL);
 
     p_mm = mapped_memory;
     last_address = mapped_memory + mapped_memory_size-1;
