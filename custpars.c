@@ -78,7 +78,7 @@ static int is_lexchar(char *value) {
    If it is none of the above, throw an error
 */
 int lex(void) {
-    char *token_start=p_mm;
+    char *token_start = p_mm;
     int canAccessPmm = 1;
 
     int isDigit = 1;
@@ -180,7 +180,7 @@ int lex(void) {
                 return val;
             }
 
-            // check wether token is a keyword
+            // check whether token is a keyword
             for (int i = 0; i < NUMBER_OF_KEYWORDS; i++) {
                 char *p_k = keywords[i];
                 char *tmp2 = token_start;
@@ -190,6 +190,7 @@ int lex(void) {
                 while (*p_k != '\0' && tmp2 <= value) {
                     if (*p_k != *tmp2) {
                         matches = 0;
+                        break;
                     }
 
                     p_k++;
