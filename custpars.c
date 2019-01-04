@@ -109,7 +109,7 @@ int lex(void) {
         // if the current token is a lexchar
         if(is_lexchar(value) && !isComment) {
             if(!(*value == ':' && canAccessPmm && *p_mm == '=')) {
-                if(*value == '-' && canAccessPmm && *p_mm == '-') {
+                if(*value == '-' && *p_mm == '-') {
                     isComment = 1;
                 }
                 else {
