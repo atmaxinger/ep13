@@ -17,7 +17,7 @@ char* mapped_memory = NULL;
 // The size of the mapped memory
 long int mapped_memory_size = 0;
 // The last valid address of the mapped memory
-long int last_address = 0;
+long long int last_address = 0;
 
 // pointer to the next char in mapped memory
 char* p_mm = NULL;
@@ -46,10 +46,6 @@ unsigned long hash(char *s);
 // ---------------------------------------------------
 
 
-static int can_access_address(char* ptr) {
-    return ptr <= last_address;
-}
-
 static int is_whitespace(char *value) {
     return *value == ' ' || *value == '\t' || *value == '\n';
 }
@@ -68,27 +64,6 @@ static int is_lexchar(char *value) {
             || *value == '+'
             || *value == '*';
 }
-
-int read_to_next_whitespace(void) {
-    int length=0;
-    char* orig = p_mm;
-
-    while (p_mm <= last_address) {
-        char *value = p_mm;
-        p_mm++;
-
-        if(!is_whitespace(value) && !is_lexchar(value)) {
-            length++;
-            printf("%c", *value);
-        }
-        else {
-            break;
-        }
-    }
-
-    fputc('\n', stdout);
-}
-
 
 /* Reads exactly one token.
 
@@ -112,11 +87,11 @@ int lex(void) {
     int isHexDigit = 1;
     int isComment = 0;
 
-    while (p_mm <= last_address) {
+    while (p_mm <= (char *) last_address) {
         char *value = p_mm;
         p_mm++;
 
-        if(p_mm > last_address) {
+        if(p_mm > (char *) last_address) {
             canAccessPmm = 0;
             eof = 1;
         }
@@ -290,7 +265,7 @@ int main(int argc, char *argv[]) {
     madvise(mapped_memory, mapped_memory_size, MADV_SEQUENTIAL);
 
     p_mm = mapped_memory;
-    last_address = mapped_memory + mapped_memory_size-1;
+    last_address = (long)mapped_memory + mapped_memory_size-1;
 
     for (x = 0; r = lex(), eof == 0;) {
         x = (x + r) * hashmult;
