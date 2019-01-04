@@ -44,24 +44,9 @@ unsigned long hash(char *s);
 // ---------------------------------------------------
 
 
-static int is_whitespace(char *value) {
-    return *value == ' ' || *value == '\t' || *value == '\n';
-}
+#define IS_WHITESPACE(value) (value == ' ' || value == '\t' || value == '\n')
+#define IS_LEXCHAR(value) (value == ';' || value == '(' || value == ')' || value == ',' || value == ':' || value == '<' || value == '#' || value == '[' || value == ']' || value == '-' || value == '+' || value == '*')
 
-static int is_lexchar(char *value) {
-    return *value == ';'
-            || *value == '('
-            || *value == ')'
-            || *value == ','
-            || *value == ':'
-            || *value == '<'
-            || *value == '#'
-            || *value == '['
-            || *value == ']'
-            || *value == '-'
-            || *value == '+'
-            || *value == '*';
-}
 
 /* Reads exactly one token.
 
@@ -94,7 +79,7 @@ int lex(void) {
             eof = 1;
         }
 
-        if(is_whitespace(value)) {
+        if(IS_WHITESPACE(*value)) {
             // value is p_mm - 1, so if value is whitespace, the next char after the whitespace is p_mm
             token_start = p_mm;
 
@@ -107,7 +92,7 @@ int lex(void) {
         }
 
         // if the current token is a lexchar
-        if(is_lexchar(value) && !isComment) {
+        if(IS_LEXCHAR(*value) && !isComment) {
             if(!(*value == ':' && canAccessPmm && *p_mm == '=')) {
                 if(*value == '-' && canAccessPmm && *p_mm == '-') {
                     isComment = 1;
@@ -154,7 +139,7 @@ int lex(void) {
 
 
         // if the next char is either a whitespace or a lexchar
-        if(canAccessPmm && (is_whitespace(p_mm) || is_lexchar(p_mm))) {
+        if(canAccessPmm && (IS_WHITESPACE(*p_mm) || IS_LEXCHAR(*p_mm))) {
 
             // if the first element of the token is $, the token could be a hex digit
             if(*token_start == '$' && isHexDigit) {
