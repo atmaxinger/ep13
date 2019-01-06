@@ -28,16 +28,13 @@ int eof = 0;
 
 enum { END=256, ARRAY, OF, INT, RETURN, IF, THEN, ELSE, WHILE, DO, VAR, NOT, OR, ASSIGNOP };
 
-#define NUMBER_OF_KEYWORDS 13
-char * keywords[]  = {
-        "end", "array", "of", "int", "return", "if", "then", "else", "while", "do", "var", "not", "or"
+#define TRIE_NEXT_SIZE 256
+struct trie_node {
+    int value;
+    struct trie_node **next;
 };
 
-int keyword_enum [] = {
-        END, ARRAY, OF, INT, RETURN, IF, THEN, ELSE, WHILE, DO, VAR, NOT, OR
-};
-
-
+struct trie_node* trie_root;
 
 unsigned long hash(char *s);
 
@@ -50,17 +47,17 @@ static int is_whitespace(char *value) {
 
 static int is_lexchar(char *value) {
     return *value == ';'
-            || *value == '('
-            || *value == ')'
-            || *value == ','
-            || *value == ':'
-            || *value == '<'
-            || *value == '#'
-            || *value == '['
-            || *value == ']'
-            || *value == '-'
-            || *value == '+'
-            || *value == '*';
+           || *value == '('
+           || *value == ')'
+           || *value == ','
+           || *value == ':'
+           || *value == '<'
+           || *value == '#'
+           || *value == '['
+           || *value == ']'
+           || *value == '-'
+           || *value == '+'
+           || *value == '*';
 }
 
 /* Reads exactly one token.
@@ -85,6 +82,9 @@ int lex(void) {
     int isHexDigit = 1;
     int isComment = 0;
 
+    struct trie_node *trie_ptr = trie_root;
+
+
     while (p_mm <= (char *) last_address) {
         char *value = p_mm;
         p_mm++;
@@ -97,6 +97,7 @@ int lex(void) {
         if(is_whitespace(value)) {
             // value is p_mm - 1, so if value is whitespace, the next char after the whitespace is p_mm
             token_start = p_mm;
+            trie_ptr = trie_root;
 
             // Comments are terminated by \n
             if(*value == '\n') {
@@ -152,9 +153,21 @@ int lex(void) {
             }
         }
 
+        // Continously check for keyword
+        if(trie_ptr != NULL) {
+            // next[*value] either returns a pointer if there is a keyword with the letter of *value
+            //              or NULL if there is no keyword with *value at the position
+            trie_ptr = trie_ptr->next[*value];
+        }
+
 
         // if the next char is either a whitespace or a lexchar
         if(canAccessPmm && (is_whitespace(p_mm) || is_lexchar(p_mm))) {
+
+            // If there is a path in our trie structure and trie_ptr points to a leaf we have a keyword
+            if(trie_ptr != NULL && trie_ptr->value != -1) {
+                return trie_ptr->value;
+            }
 
             // if the first element of the token is $, the token could be a hex digit
             if(*token_start == '$' && isHexDigit) {
@@ -180,29 +193,6 @@ int lex(void) {
                 return val;
             }
 
-            // check whether token is a keyword
-            for (int i = 0; i < NUMBER_OF_KEYWORDS; i++) {
-                char *p_k = keywords[i];
-                char *tmp2 = token_start;
-
-                int matches = 1;
-
-                while (*p_k != '\0' && tmp2 <= value) {
-                    if (*p_k != *tmp2) {
-                        matches = 0;
-                        break;
-                    }
-
-                    p_k++;
-                    tmp2++;
-                }
-
-                // to be a keyword, it has to match the beginning of the token AND be as long as the token
-                if(matches && tmp2==value+1 && *(p_k) == '\0') {
-                    return keyword_enum[i];
-                }
-            }
-
             // finally, check for ID
             if((token_start[0] >= 'A' && token_start[0] <= 'Z') || (token_start[0] >= 'a' && token_start[0] <= 'z') ) {
                 char original_character = *p_mm;
@@ -226,6 +216,92 @@ int lex(void) {
             }
         }
     }
+}
+
+
+
+struct trie_node** create_next_array() {
+    struct trie_node** arr = malloc(TRIE_NEXT_SIZE * sizeof(struct trie_node*));
+    memset(arr, 0, TRIE_NEXT_SIZE * sizeof(struct trie_node*));
+    return arr;
+}
+
+struct trie_node* create_node() {
+    struct trie_node* node = malloc(sizeof(struct trie_node));
+    node->value = -1;
+    node->next = create_next_array();
+
+    return node;
+}
+
+void build_trie() {
+    trie_root = create_node();
+
+    trie_root->next['o'] = create_node();
+    trie_root->next['o']->next['r'] = create_node();
+    trie_root->next['o']->next['r']->value = OR;
+    trie_root->next['o']->next['f'] = create_node();
+    trie_root->next['o']->next['f']->value = OF;
+
+    trie_root->next['i'] = create_node();
+    trie_root->next['i']->next['f'] = create_node();
+    trie_root->next['i']->next['f']->value = IF;
+    trie_root->next['i']->next['n'] = create_node();
+    trie_root->next['i']->next['n']->next['t'] = create_node();
+    trie_root->next['i']->next['n']->next['t']->value = INT;
+
+    trie_root->next['d'] = create_node();
+    trie_root->next['d']->next['o'] = create_node();
+    trie_root->next['d']->next['o']->value = DO;
+
+    trie_root->next['v'] = create_node();
+    trie_root->next['v']->next['a'] = create_node();
+    trie_root->next['v']->next['a']->next['r'] = create_node();
+    trie_root->next['v']->next['a']->next['r']->value = VAR;
+
+
+    trie_root->next['n'] = create_node();
+    trie_root->next['n']->next['o'] = create_node();
+    trie_root->next['n']->next['o']->next['t'] = create_node();
+    trie_root->next['n']->next['o']->next['t']->value = NOT;
+
+    trie_root->next['e'] = create_node();
+    trie_root->next['e']->next['n'] = create_node();
+    trie_root->next['e']->next['n']->next['d'] = create_node();
+    trie_root->next['e']->next['n']->next['d']->value = END;
+    trie_root->next['e']->next['l'] = create_node();
+    trie_root->next['e']->next['l']->next['s'] = create_node();
+    trie_root->next['e']->next['l']->next['s']->next['e'] = create_node();
+    trie_root->next['e']->next['l']->next['s']->next['e']->value = ELSE;
+
+    trie_root->next['t'] = create_node();
+    trie_root->next['t']->next['h'] = create_node();
+    trie_root->next['t']->next['h']->next['e'] = create_node();
+    trie_root->next['t']->next['h']->next['e']->next['n'] = create_node();
+    trie_root->next['t']->next['h']->next['e']->next['n']->value = THEN;
+
+    trie_root->next['a'] = create_node();
+    trie_root->next['a']->next['r'] = create_node();
+    trie_root->next['a']->next['r']->next['r'] = create_node();
+    trie_root->next['a']->next['r']->next['r']->next['a'] = create_node();
+    trie_root->next['a']->next['r']->next['r']->next['a']->next['y'] = create_node();
+    trie_root->next['a']->next['r']->next['r']->next['a']->next['y']->value = ARRAY;
+
+    trie_root->next['w'] = create_node();
+    trie_root->next['w']->next['h'] = create_node();
+    trie_root->next['w']->next['h']->next['i'] = create_node();
+    trie_root->next['w']->next['h']->next['i']->next['l'] = create_node();
+    trie_root->next['w']->next['h']->next['i']->next['l']->next['e'] = create_node();
+    trie_root->next['w']->next['h']->next['i']->next['l']->next['e']->value = WHILE;
+
+
+    trie_root->next['r'] = create_node();
+    trie_root->next['r']->next['e'] = create_node();
+    trie_root->next['r']->next['e']->next['t'] = create_node();
+    trie_root->next['r']->next['e']->next['t']->next['u'] = create_node();
+    trie_root->next['r']->next['e']->next['t']->next['u']->next['r'] = create_node();
+    trie_root->next['r']->next['e']->next['t']->next['u']->next['r']->next['n'] = create_node();
+    trie_root->next['r']->next['e']->next['t']->next['u']->next['r']->next['n']->value = RETURN;
 }
 
 
@@ -266,6 +342,8 @@ int main(int argc, char *argv[]) {
     p_mm = mapped_memory;
     last_address = (long)mapped_memory + mapped_memory_size-1;
 
+    build_trie();
+
     for (x = 0; r = lex(), eof == 0;) {
         x = (x + r) * hashmult;
     }
@@ -284,3 +362,4 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
+
