@@ -42,22 +42,15 @@ unsigned long hash(char *s);
 
 
 static int is_whitespace(char *value) {
-    return *value == ' ' || *value == '\t' || *value == '\n';
+    return *value <= 0x20;
 }
 
 static int is_lexchar(char *value) {
-    return *value == ';'
-           || *value == '('
-           || *value == ')'
-           || *value == ','
-           || *value == ':'
-           || *value == '<'
+    return (*value >= 0x28 && *value <= 0x2D) // check if '(' <= *value <= '-'
+           ||(*value >= 0x3A && *value <= 0x3C) // check if ':' <= *value <= '<'
            || *value == '#'
            || *value == '['
-           || *value == ']'
-           || *value == '-'
-           || *value == '+'
-           || *value == '*';
+           || *value == ']';
 }
 
 /* Reads exactly one token.
